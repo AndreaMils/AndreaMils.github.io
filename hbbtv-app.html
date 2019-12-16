@@ -5,20 +5,16 @@
     <meta charset="UTF-8">
     <title>HbbTV App</title>
     <script type="text/javascript" src="js/hbbtv-manager-polyfill.js"></script>
+    <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
 </head>
-<h1>HbbTV App</h1>
-<button onclick="discoverCSLaunchers()">Discover CS Launchers</button>
 <body>
      <h1>HbbTV App</h1>
     <div style="float: left; width: 48%;">
         <!-- <button id="discoverTerminalsBtn">Discover HbbTV Terminals</button> -->
-        <button onclick="discoverTerminals()">Discover HbbTV Terminals 2</button>
+        <button onclick="discoverCSLaunchers()">Discover CS Launchers</button>
         <br>
         <div id="info"></div>
-        <br>
-        <ul id="terminals">
-
-        </ul>
+       
     </div>
     <div style="float: left; width: 48%; height: 90%">
         <pre id="log" style="width: 98%; height: 98%" disabled="false"></pre>
