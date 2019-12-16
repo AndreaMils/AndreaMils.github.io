@@ -9,6 +9,20 @@
 <h1>HbbTV App</h1>
 <button onclick="discoverCSLaunchers()">Discover CS Launchers</button>
 <body>
+     <h1>HbbTV App</h1>
+    <div style="float: left; width: 48%;">
+        <!-- <button id="discoverTerminalsBtn">Discover HbbTV Terminals</button> -->
+        <button onclick="discoverTerminals()">Discover HbbTV Terminals 2</button>
+        <br>
+        <div id="info"></div>
+        <br>
+        <ul id="terminals">
+
+        </ul>
+    </div>
+    <div style="float: left; width: 48%; height: 90%">
+        <pre id="log" style="width: 98%; height: 98%" disabled="false"></pre>
+    </div>
 <script type="text/javascript">
     var csManager = oipfObjectFactory.createCSManager();
     var app2appLocalBaseUrl = csManager.getApp2AppLocalBaseURL();
@@ -27,6 +41,20 @@
             console.log("cs launchers found",csLaunchers);
         });
     };
+    
+    (function () {
+    var old = console.log;
+    var logger = document.getElementById('log');
+    console.log = function (message) {
+        if (typeof message == 'object') {
+            logger.innerHTML += (JSON && JSON.stringify ? JSON.stringify(message) : message) + '<br />';
+        } else {
+            logger.innerHTML += message + "<br />";
+        }
+    }
+    })();
+
+    
     var launchCsApp = function (csLauncher, csAppUrl) {
         var payload = {
             "launch": [
