@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<!-- http://www.example.com/hbbtv-app.html -->
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>HbbTV App</title>
+    <script type="text/javascript" src="js/hbbtv-manager-polyfill.js"></script>
+</head>
+<h1>HbbTV App</h1>
+<button onclick="discoverCSLaunchers()">Discover CS Launchers</button>
+<body>
+<script type="text/javascript">
+    var csManager = oipfObjectFactory.createCSManager();
+    var app2appLocalBaseUrl = csManager.getApp2AppLocalBaseURL();
+    var appEndpoint = "org.mychannel.myapp";
+    function discoverCSLaunchers(){
+        csManager.discoverCSLaunchers(function (csLaunchers) {
+            if(csLaunchers.length==0){
+                console.log("No CS launcher found.");
+            }
+            else{
+                console.log(csLaunchers.length, " CSLaunchers found");
+                var csLauncher = csLaunchers[0];
+                console.log("Launch CS Web App on companion device: ",csLauncher.friendly_name);
+                launchCsApp(csLauncher, "http://www.example.org/cs-app.html");
+            }
+            console.log("cs launchers found",csLaunchers);
+        });
+    };
+    var launchCsApp = function (csLauncher, csAppUrl) {
+        var payload = {
+            "launch": [
+                {"launchUrl": csAppUrl+"?app2appURL="+csManager.getApp2AppRemoteBaseURL(), "appType": "html"}
+            ]
+        };
+        csManager.launchCSApp(csLauncher.enum_id, payload, function (res) {
+            console.log("launch cs app result code", res);
+        });
+    };
+    var createConnection = function (index) {
+        var ws = new WebSocket(app2appLocalBaseUrl + appEndpoint);
+        ws.binaryType = "arraybuffer";
+        ws.onopen = function(evt) {
+            console.log("Connection ",index," waiting ...");
+        };
+        ws.onclose = function(evt) {
+            console.log("Connection ",index," closed.");
+        };
+        ws.onerror = function (evt) {
+            console.log("Connection error.");
+        };
+        ws.onmessage = function(evt) {
+            if (evt.data == "pairingcompleted") {
+                console.log("connection ",index," paired");
+                ws.onmessage = function(evt) {
+                    if(typeof evt.data == "string"){
+                        console.log( "Received Message: " + evt.data);
+                    }
+                    else {
+                        var data = typeof Buffer != "undefined"?new Buffer(evt.data): new Int8Array(evt.data);
+                        console.log("Received Binary Message of " + data.length + " bytes", data);
+                    }
+                };
+                ws.send("Hello from HbbTV App: "+index);
+                // create a new connection to accept additional clients
+                createConnection(index+1);
+            } else {
+                console.log("Unexpected message received from terminal.");
+                ws.close();
+            }
+        };
+    };
+    // create first connection to local App2App endpoint
+    createConnection(0);
+</script>
+</body>
+</html>
