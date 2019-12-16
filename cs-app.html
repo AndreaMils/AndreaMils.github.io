@@ -10,7 +10,7 @@
 <body>
     <h1>CS App</h1>
     <div style="float: left; width: 48%;">
-        <button id="discoverTerminalsBtn">Discover HbbTV Terminals</button>
+        <!-- <button id="discoverTerminalsBtn">Discover HbbTV Terminals</button> -->
         <button onclick="discoverTerminals()">Discover HbbTV Terminals 2</button>
         <br>
         <div id="info"></div>
@@ -20,7 +20,7 @@
         </ul>
     </div>
     <div style="float: left; width: 48%; height: 90%">
-        <textarea id="log" style="width: 98%; height: 98%" disabled="true"></textarea>
+        <pre id="log" style="width: 98%; height: 98%" disabled="false"></pre>
     </div>
    
 <script type="text/javascript">
@@ -35,13 +35,38 @@
                 console.log("No HbbTV Terminals found");
            }
            else {
+            $("#info").empty();
+                $(terminals).each(function (i, terminal) {
+                    $("#terminals").append("<li id='" + i + "'>" + terminal.friendly_name )
+                });
                 console.log(terminals.length, " Terminals found");
                 var terminal = terminals[0];
                 console.log("Launch HbbTV App on Terminal: ",terminal.friendly_name);
-                launchHbbTVApp(terminal,"http://fraunhoferfokus.github.io/node-hbbtv/www/hbbtv-app.html#port=8080");
+                launchHbbTVApp(terminal,"https://andreamils.github.io/hbbtv-app.html#port=8080");
            }
        });
    };
+
+
+(function () {
+    var old = console.log;
+    var logger = document.getElementById('log');
+    console.log = function (message) {
+        if (typeof message == 'object') {
+            logger.innerHTML += (JSON && JSON.stringify ? JSON.stringify(message) : message) + '<br />';
+        } else {
+            logger.innerHTML += message + "<br />";
+        }
+    }
+})();
+
+// var log = function (msg) {
+//             console.log(msg);
+//             var logElem = $("#log");
+//             logElem.val(logElem.val() + msg + "\n");
+//             logElem.scrollTop(logElem[0].scrollHeight);
+//         };
+
    $("#discoverTerminalsBtn").click(function () {
             $("#info").html("Searching for HbbTV Terminals:  please wait ...");
             $("#terminals").empty();
